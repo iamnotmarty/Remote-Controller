@@ -13,8 +13,11 @@
 #define SPI_CE 				GPIO_Pin_10
 
 /* Define static coefficients */
-static uint16_t const deadZone = 400;
-static uint16_t const sensitivity = 500;
+static uint16_t deadZone = 400;
+static uint16_t sensitivity = 200;
+//static uint16_t const deadZone_limit = 1500;
+//static uint16_t const sensitivity_limit = 400;
+static uint8_t starting_percentage = 50;
 
 /* Microcontroller setup, function declaration */
 static void GPIO_initialize(void);
@@ -26,6 +29,7 @@ static void ADC_initialize(void);
 /* User function declaration*/
 static uint16_t analog_reading(uint8_t);
 uint16_t ADC_balance(uint16_t);
+void deadZone_check(void);
 
 
 //Type Define
@@ -52,8 +56,12 @@ int main(void) {
 	NVIC_Configuration();	
 	TIM_initialize();
 	ADC_initialize();
-
-
+	
+	uint16_t deadZone_Upper = 2048+deadZone;
+	uint16_t deadZone_Lower = 2048-deadZone;
+	uint8_t portion = 100 - starting_percentage;
+	float step_per_portion = 100;
+	
   // Start Timer 2 interrupt
 	TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE);
 	TIM_Cmd(TIM2, ENABLE);
@@ -201,15 +209,15 @@ uint16_t ADC_balance(uint16_t raw_value){
 	uint16_t corrected_value = 0;
 	
 	if ((raw_value > (2048-deadZone))&&(raw_value < (2048+deadZone))){
-		corrected_value = 2048;	
+		corrected_value = 0;	
 	}
 	
+	if(){}
 
 
 
 	return corrected_value; 
 }
-
 
 
 /* Interrupt Handling */
